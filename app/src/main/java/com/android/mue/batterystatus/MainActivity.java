@@ -4,8 +4,14 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 public class MainActivity extends Activity {
     //broadcast class is used as a nested class
@@ -33,4 +39,30 @@ public class MainActivity extends Activity {
                     //Save small.mp4 in assets folder
                     //we can not start a media file from the drawable folder directly in broadcast method
                     //hence we used the assets folder    }
+                    AssetFileDescriptor afd=getAssets().openFd("small.mp4");
+                    MediaPlayer mp=new MediaPlayer();
+                    //set file and starting point and ending point in bytes
+                    mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                    mp.prepare();
+                    //start song
+                    mp.start();
+                }
+                catch(IOException e){}
+            }
+        }
+    };
+    /** Called when the activity is first created. */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //set layout
+        setContentView(R.layout.activity_main);
+        //register broadcast receiver
+        //Get battery changed status
+        //we can get more options like power connect, disconnect, call, etc.
+        //To get more options, write Intent followed by a dot(.) and press CTRL+Space
+        //you will get all the options
+        registerReceiver(mbcr,new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    }
 }
+
